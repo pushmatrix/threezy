@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blender to Three.js Converter</title>
+    <style>
+      body {
+        font-family: "Inter", -apple-system, sans-serif;
+        background: #1a1a1a;
+        color: #ffffff;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        line-height: 1.6;
+      }
+
+      .container {
+        background: #252525;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #8c8cff;
+        margin-bottom: 0rem;
+        padding-bottom: 0rem;
+      }
+      h2 {
+        margin-top: 0;
+        margin-bottom: 2rem;
+      }
+
+      .input-group {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      input {
+        background: #333;
+        border: 1px solid #444;
+        color: #fff;
+        padding: 0.8rem;
+        border-radius: 4px;
+        width: 100%;
+        margin: 0.5rem 0;
+      }
+
+      button {
+        background: #8c8cff;
+        color: #fff;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      button:hover {
+        background: #7070ff;
+      }
+
+      .result {
+        background: #333;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-top: 1rem;
+        font-family: monospace;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #aaa;
+      }
+
+      select {
+        background: #333;
+        border: 1px solid #444;
+        color: #fff;
+        padding: 0.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      h2 select {
+        font-size: 1rem;
+        margin-left: 0.5rem;
+        padding: 0.2rem 0.5rem;
+      }
+
+      .copy-btn {
+        background: #444;
+        color: #fff;
+        border: none;
+        padding: 0.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+      }
+
+      .copy-btn:hover {
+        background: #555;
+      }
+
+      .unit-select {
+        display: inline-block;
+        font-size: 0.8rem;
+        padding: 0.1rem 0.3rem;
+        margin-left: 0.5rem;
+        width: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Threezy</h1>
+    <h2>Blender to Three.js Converter</h2>
+
+    <div class="container">
+      <h2>Position Converter</h2>
+      <div class="input-group">
+        <div>
+          <label>Blender X (deg)</label>
+          <input
+            type="number"
+            id="blenderPosX"
+            step="0.01"
+            class="converter"
+            value="0"
+          />
+        </div>
+        <div>
+          <label>Blender Y</label>
+          <input
+            type="number"
+            id="blenderPosY"
+            step="0.01"
+            class="converter"
+            value="0"
+          />
+        </div>
+        <div>
+          <label>Blender Z</label>
+          <input
+            type="number"
+            id="blenderPosZ"
+            step="0.01"
+            class="converter"
+            value="0"
+          />
+        </div>
+      </div>
+      <div class="input-group">
+        <div>
+          <label>Three.js X</label>
+          <input
+            type="number"
+            id="threePosX"
+            step="0.01"
+            class="converter"
+            value="0"
+          />
+        </div>
+        <div>
+          <label>Three.js Y</label>
+          <input
+            type="number"
+            id="threePosY"
+            step="0.01"
+            class="converter"
+            value="0"
+          />
+        </div>
+        <div>
+          <label>Three.js Z</label>
+          <input
+            type="number"
+            id="threePosZ"
+            step="0.01"
+            class="converter"
+            value="0"
+          />
+        </div>
+      </div>
+      <div class="result">
+        position.set(<span id="positionCode">0, 0, 0</span>);
+      </div>
+    </div>
+
+    <div class="container">
+      <h2>Rotation Converter</h2>
+      <div class="input-group">
+        <div>
+          <label>Blender X (deg)</label>
+          <input
+            type="number"
+            id="blenderRotX"
+            step="0.1"
+            class="converter"
+            value="0"
+          />
+        </div>
+        <div>
+          <label>Blender Y (deg)</label>
+          <input
+            type="number"
+            id="blenderRotY"
+            step="0.1"
+            class="converter"
+            value="0"
+          />
+        </div>
+        <div>
+          <label>Blender Z (deg)</label>
+          <input
+            type="number"
+            id="blenderRotZ"
+            step="0.1"
+            class="converter"
+            value="0"
+          />
+        </div>
+      </div>
+      <div class="input-group">
+        <div>
+          <label for="threeRotX">
+            Three.js X
+            <select class="unit-select converter">
+              <option value="rad">rad</option>
+              <option value="deg">deg</option>
+            </select>
+          </label>
+          <input
+            type="number"
+            id="threeRotX"
+            step="0.01"
+            class="converter"
+            value="0"
+          />
+        </div>
+        <div>
+          <label for="threeRotY">
+            Three.js Y
+            <select class="unit-select converter">
+              <option value="rad">rad</option>
+              <option value="deg">deg</option>
+            </select>
+          </label>
+          <input
+            type="number"
+            id="threeRotY"
+            step="0.01"
+            class="converter"
+            value="0"
+          />
+        </div>
+        <div>
+          <label for="threeRotZ">
+            Three.js Z
+            <select class="unit-select converter">
+              <option value="rad">rad</option>
+              <option value="deg">deg</option>
+            </select>
+          </label>
+          <input
+            type="number"
+            id="threeRotZ"
+            step="0.01"
+            class="converter"
+            value="0"
+          />
+        </div>
+      </div>
+      <div class="result">
+        rotation.set(<span id="rotationCode">0, 0, 0</span>);
+      </div>
+    </div>
+
+    <div class="container">
+      <h2>FOV Converter</h2>
+      <p>Note: Blender uses horizontal FOV, and threejs uses vertical.</p>
+      <div class="input-group">
+        <div>
+          <label>Width</label>
+          <input
+            type="number"
+            id="aspectWidth"
+            step="1"
+            class="converter"
+            value="16"
+          />
+        </div>
+        <div>
+          <label>Height</label>
+          <input
+            type="number"
+            id="aspectHeight"
+            step="1"
+            class="converter"
+            value="9"
+          />
+        </div>
+      </div>
+      <div class="input-group">
+        <div>
+          <label>Horizontal FOV (degrees)</label>
+          <input
+            type="number"
+            id="hFov"
+            step="0.1"
+            class="converter"
+            value="90"
+          />
+        </div>
+        <div>
+          <label>Vertical FOV (degrees)</label>
+          <input
+            type="number"
+            id="vFov"
+            step="0.1"
+            class="converter"
+            value="59.5"
+          />
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function getAspectRatio() {
+        const width =
+          parseFloat(document.getElementById("aspectWidth").value) || 16;
+        const height =
+          parseFloat(document.getElementById("aspectHeight").value) || 9;
+        return width / height;
+      }
+
+      function convertPosition(event) {
+        const isBlenderInput = event?.target?.id?.startsWith("blender");
+
+        if (isBlenderInput || event === undefined) {
+          // Blender to Three.js
+          const x =
+            parseFloat(document.getElementById("blenderPosX").value) || 0;
+          const y =
+            parseFloat(document.getElementById("blenderPosY").value) || 0;
+          const z =
+            parseFloat(document.getElementById("blenderPosZ").value) || 0;
+
+          document.getElementById("threePosX").value = x.toFixed(3);
+          document.getElementById("threePosY").value = z.toFixed(3);
+          document.getElementById("threePosZ").value = (-y).toFixed(3);
+        } else {
+          // Three.js to Blender
+          const x = parseFloat(document.getElementById("threePosX").value) || 0;
+          const y = parseFloat(document.getElementById("threePosY").value) || 0;
+          const z = parseFloat(document.getElementById("threePosZ").value) || 0;
+
+          document.getElementById("blenderPosX").value = x.toFixed(3);
+          document.getElementById("blenderPosY").value = (-z).toFixed(3);
+          document.getElementById("blenderPosZ").value = y.toFixed(3);
+        }
+        updateCodeSnippets();
+      }
+
+      function convertRotation(event) {
+        const isBlenderInput = event?.target?.id?.startsWith("blender");
+        const useRadians =
+          document.querySelector(".unit-select").value === "rad";
+
+        if (isBlenderInput || event === undefined) {
+          // Blender to Three.js (Blender is always in degrees)
+          const x =
+            parseFloat(document.getElementById("blenderRotX").value) || 0;
+          const y =
+            parseFloat(document.getElementById("blenderRotY").value) || 0;
+          const z =
+            parseFloat(document.getElementById("blenderRotZ").value) || 0;
+
+          // Convert from Blender degrees to Three.js units
+          const xRad = (x * Math.PI) / 180; // Always convert to radians first
+          const yRad = (z * Math.PI) / 180;
+          const zRad = (-y * Math.PI) / 180;
+
+          document.getElementById("threeRotX").value = (
+            xRad * (useRadians ? 1 : 180 / Math.PI)
+          ).toFixed(3);
+          document.getElementById("threeRotY").value = (
+            yRad * (useRadians ? 1 : 180 / Math.PI)
+          ).toFixed(3);
+          document.getElementById("threeRotZ").value = (
+            zRad * (useRadians ? 1 : 180 / Math.PI)
+          ).toFixed(3);
+        } else {
+          // Three.js to Blender (convert to degrees for Blender)
+          const x = parseFloat(document.getElementById("threeRotX").value) || 0;
+          const y = parseFloat(document.getElementById("threeRotY").value) || 0;
+          const z = parseFloat(document.getElementById("threeRotZ").value) || 0;
+
+          // If Three.js values are in degrees, convert to radians first
+          const xRad = useRadians ? x : (x * Math.PI) / 180;
+          const yRad = useRadians ? y : (y * Math.PI) / 180;
+          const zRad = useRadians ? z : (z * Math.PI) / 180;
+
+          // Convert to Blender degrees
+          document.getElementById("blenderRotX").value = (
+            (xRad * 180) /
+            Math.PI
+          ).toFixed(3);
+          document.getElementById("blenderRotY").value = (
+            (-zRad * 180) /
+            Math.PI
+          ).toFixed(3);
+          document.getElementById("blenderRotZ").value = (
+            (yRad * 180) /
+            Math.PI
+          ).toFixed(3);
+        }
+        updateCodeSnippets();
+      }
+
+      function convertFOV(event) {
+        const aspectRatio = getAspectRatio();
+        const hFov = parseFloat(document.getElementById("hFov").value) || 90;
+        const vFov = parseFloat(document.getElementById("vFov").value) || 59.5;
+
+        if (event?.target?.id === "hFov" || event === undefined) {
+          // Convert from horizontal to vertical FOV
+          const hFovRad = (hFov * Math.PI) / 180;
+          const vFovRad = 2 * Math.atan(Math.tan(hFovRad / 2) / aspectRatio);
+          const vFovDeg = (vFovRad * 180) / Math.PI;
+          document.getElementById("vFov").value = vFovDeg.toFixed(1);
+        } else {
+          // Convert from vertical to horizontal FOV
+          const vFovRad = (vFov * Math.PI) / 180;
+          const hFovRad = 2 * Math.atan(Math.tan(vFovRad / 2) * aspectRatio);
+          const hFovDeg = (hFovRad * 180) / Math.PI;
+          document.getElementById("hFov").value = hFovDeg.toFixed(1);
+        }
+      }
+
+      function updateCodeSnippets() {
+        const formatNumber = (num) => {
+          // Convert to float and remove unnecessary trailing zeros
+          return parseFloat(parseFloat(num).toFixed(3)).toString();
+        };
+
+        const px = formatNumber(document.getElementById("threePosX").value);
+        const py = formatNumber(document.getElementById("threePosY").value);
+        const pz = formatNumber(document.getElementById("threePosZ").value);
+        document.getElementById(
+          "positionCode"
+        ).textContent = `${px}, ${py}, ${pz}`;
+
+        const rx = formatNumber(document.getElementById("threeRotX").value);
+        const ry = formatNumber(document.getElementById("threeRotY").value);
+        const rz = formatNumber(document.getElementById("threeRotZ").value);
+        document.getElementById(
+          "rotationCode"
+        ).textContent = `${rx}, ${ry}, ${rz}`;
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Set initial values to 0
+        const inputs = document.querySelectorAll(".converter");
+        inputs.forEach((input) => {
+          if (input.type === "number" && !input.value) {
+            input.value = "0";
+          }
+
+          // Add event listeners for auto-conversion
+          input.addEventListener("input", function (event) {
+            if (this.id.includes("Pos")) {
+              convertPosition(event);
+            } else if (this.id.includes("Rot")) {
+              convertRotation(event);
+            } else if (this.id.includes("Fov") || this.id.includes("aspect")) {
+              convertFOV(event);
+            }
+          });
+        });
+
+        // Initial conversion
+        convertPosition();
+        convertRotation();
+        convertFOV();
+
+        document.querySelectorAll(".unit-select").forEach((select) => {
+          select.addEventListener("change", function () {
+            // Sync all unit selects
+            const value = this.value;
+            document
+              .querySelectorAll(".unit-select")
+              .forEach((s) => (s.value = value));
+            convertRotation();
+          });
+        });
+
+        // Add initial label setup
+        updateCodeSnippets();
+      });
+    </script>
+  </body>
+</html>
